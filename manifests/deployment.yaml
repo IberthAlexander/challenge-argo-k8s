@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: challenge-gitops
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+  namespace: challenge-gitops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-web
+  template:
+    metadata:
+      labels:
+        app: hello-web
+    spec:
+      containers:
+      - name: web
+        image: hashicorp/http-echo:latest
+        args:
+          - "-text=Hola desde ArgoCD y Kubernetes local!"
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+  namespace: challenge-gitops
+spec:
+  type: NodePort
+  selector:
+    app: hello-web
+  ports:
+    - port: 80
+      targetPort: 5678
+      nodePort: 30080
