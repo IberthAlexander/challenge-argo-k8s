@@ -56,7 +56,27 @@ spec:
       requests:
         memory: "50Mi"
       limits:
-        memory: "50Mi" 
+        memory: "50Mi"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-config-error-pod
+  namespace: challenge-gitops
+  labels:
+    app: config-error-test
+spec:
+  containers:
+  - name: app
+    image: busybox
+    command: ["sh", "-c", "echo 'ERROR: falta DATABASE_URL'; sleep 3; exit 1"]
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "50m"
+      limits:
+        memory: "64Mi"
+        cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
