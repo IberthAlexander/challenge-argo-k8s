@@ -25,10 +25,10 @@ spec:
           - "-text=Hola desde ArgoCD y Kubernetes local!"
         resources:
           requests:
-            memory: "8Gi"
+            memory: "128Mi"
             cpu: "100m"
           limits:
-            memory: "8Gi"
+            memory: "256Mi"
             cpu: "200m"
         ports:
         - containerPort: 5678     
