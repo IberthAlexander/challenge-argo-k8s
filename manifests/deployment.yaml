@@ -9,7 +9,7 @@ metadata:
   name: hello-deployment
   namespace: challenge-gitops
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: hello-web
@@ -22,7 +22,7 @@ spec:
       - name: web
         image: hashicorp/http-echo:latest
         args:
-          - "-text=Hola desde ArgoCD y Kubernetes local con GPU simulada!"
+          - "-text=Hola desde ArgoCD y Kubernetes local!"
         resources:
           requests:
             memory: "128Mi"
@@ -37,7 +37,26 @@ spec:
             path: /healthz     
             port: 5678
           initialDelaySeconds: 5
-          periodSeconds: 10      
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stress-test-pod
+  namespace: challenge-gitops
+  labels:
+    app: hello-web-stress
+spec:
+  containers:
+  - name: stress
+    image: polinux/stress
+    command: ["stress"]
+    args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+    resources:
+      requests:
+        memory: "50Mi"
+      limits:
+        memory: "50Mi" 
 ---
 apiVersion: v1
 kind: Service
