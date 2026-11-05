@@ -22,14 +22,16 @@ spec:
       - name: web
         image: hashicorp/http-echo:latest
         args:
-          - "-text=Hola desde ArgoCD y Kubernetes local!"
+          - "-text=Hola desde ArgoCD y Kubernetes local con GPU simulada!"
         resources:
           requests:
             memory: "128Mi"
             cpu: "100m"
+            nvidia.com/gpu: "1"  # <--- Exige una GPU que ningún nodo tiene
           limits:
             memory: "256Mi"
             cpu: "200m"
+            nvidia.com/gpu: "1"  # <--- Límite de GPU
         ports:
         - containerPort: 5678     
         livenessProbe:
@@ -37,7 +39,7 @@ spec:
             path: /healthz     
             port: 5678
           initialDelaySeconds: 5
-          periodSeconds: 5        
+          periodSeconds: 10      
 ---
 apiVersion: v1
 kind: Service
