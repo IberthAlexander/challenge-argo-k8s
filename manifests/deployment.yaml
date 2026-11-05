@@ -27,11 +27,9 @@ spec:
           requests:
             memory: "128Mi"
             cpu: "100m"
-            nvidia.com/gpu: "1"  # <--- Exige una GPU que ningún nodo tiene
           limits:
             memory: "256Mi"
             cpu: "200m"
-            nvidia.com/gpu: "1"  # <--- Límite de GPU
         ports:
         - containerPort: 5678     
         livenessProbe:
