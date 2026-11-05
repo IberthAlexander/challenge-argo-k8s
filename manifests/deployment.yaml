@@ -25,11 +25,11 @@ spec:
           - "-text=Hola desde ArgoCD y Kubernetes local!"
         resources:
           requests:
-            memory: "8Gi"   # <--- Lo que simula el fallo de memoria
-            cpu: "500m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
-            memory: "8Gi"
-            cpu: "1"
+            memory: "256Mi"
+            cpu: "200m"
         ports:
         - containerPort: 5678
 ---
