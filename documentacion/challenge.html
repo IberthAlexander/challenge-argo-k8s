@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Técnico - Challenge DevOps GitOps</title>
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --primary: #1e293b;
+            --primary-accent: #2563eb;
+            --border: #e2e8f0;
+            --code-bg: #0f172a;
+            --code-text: #f8fafc;
+            --accent-gray: #f1f5f9;
+            
+            --danger-bg: #fef2f2;
+            --danger-border: #fca5a5;
+            --danger-text: #991b1b;
+            
+            --warning-bg: #fffbeb;
+            --warning-border: #fde68a;
+            --warning-text: #92400e;
+            
+            --success-bg: #f0fdf4;
+            --success-border: #86efac;
+            --success-text: #166534;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+            padding: 2.5rem;
+        }
+
+        header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-header {
+            display: inline-block;
+            background-color: var(--accent-gray);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-accent);
+        }
+
+        .tab-button.active {
+            color: var(--primary-accent);
+            border-bottom-color: var(--primary-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p, li {
+            font-size: 0.95rem;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Diagrama de Integración */
+        .diagram-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-body);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+
+        .diagram-step {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .diagram-step h4 {
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .diagram-step p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .diagram-arrow {
+            color: var(--text-muted);
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        /* Bloques de Código */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: var(--accent-gray);
+            color: var(--primary);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.87rem;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: var(--code-text);
+            padding: 0;
+        }
+
+        /* Callouts / Banners */
+        .callout {
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border: 1px solid;
+        }
+
+        .callout-danger {
+            background-color: var(--danger-bg);
+            border-color: var(--danger-border);
+            color: var(--danger-text);
+        }
+
+        .callout-success {
+            background-color: var(--success-bg);
+            border-color: var(--success-border);
+            color: var(--success-text);
+        }
+
+        .callout-warning {
+            background-color: var(--warning-bg);
+            border-color: var(--warning-border);
+            color: var(--warning-text);
+        }
+
+        .callout h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* Tarjetas para Resumen */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            background: var(--bg-body);
+        }
+
+        .card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .card p {
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1.25rem; }
+            .diagram-container { flex-direction: column; }
+            .diagram-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <span class="badge-header">Documentación Técnica DevOps</span>
+            <h1>Despliegue e Integración GitOps</h1>
+            <p class="subtitle">Kubernetes (Minikube) + GitHub + ArgoCD en entorno Ubuntu WSL2</p>
+        </header>
+
+        <!-- Navegación por Pestañas -->
+        <div class="tabs-nav">
+            <button class="tab-button active" onclick="openTab(event, 'general')">1. Arquitectura & Guía</button>
+            <button class="tab-button" onclick="openTab(event, 'manifest')">2. Manifiesto Unificado Base</button>
+            <button class="tab-button" onclick="openTab(event, 'issues')">3. Troubleshooting & Casos Prácticos (5 Escenarios)</button>
+        </div>
+
+        <!-- PESTAÑA 1: ARQUITECTURA -->
+        <div id="general" class="tab-content active">
+            <h2>1. Preparación del Entorno Local (Pre-work)</h2>
+            <p>Se configuró un entorno local aislado sobre Ubuntu WSL2, verificando los componentes principales:</p>
+            <ul>
+                <li><strong>Docker Desktop:</strong> Motor de contenedores habilitado con integración WSL2.</li>
+                <li><strong>Minikube (v1.39.0):</strong> Clúster mononodo inicializado sobre Docker asignando recursos optimizados:
+                    <pre><code>minikube start --driver=docker --cpus=4 --memory=4096 --force</code></pre>
+                </li>
+                <li><strong>Kubectl & ArgoCD CLI:</strong> Clientes de línea de comandos para la gestión de recursos de Kubernetes y la sincronización declarativa de GitOps.</li>
+            </ul>
+
+            <h2>2. Arquitectura de Integración GitOps (GitHub + ArgoCD + Kubernetes)</h2>
+            <p>El modelo <strong>GitOps</strong> adopta a Git como la fuente única de verdad (<em>Single Source of Truth</em>). La sincronización se ejecuta mediante un patrón de extracción activa (<em>Pull Model</em>):</p>
+
+            <div class="diagram-container">
+                <div class="diagram-step">
+                    <h4>1. GitHub</h4>
+                    <p>Almacena manifiestos YAML declarativos en la rama <code>dev</code> (carpeta <code>manifests/</code>).</p>
+                </div>
+                <span class="diagram-arrow">&rarr;</span>
+                <div class="diagram-step">
+                    <h4>2. ArgoCD Controller</h4>
+                    <p>Vigila continuamente los cambios en Git y los compara con el estado real del clúster.</p>
+                </div>
+                <span class="diagram-arrow">&rarr;</span>
+                <div class="diagram-step">
+                    <h4>3. Clúster Minikube</h4>
+                    <p>Aplica los recursos en el namespace objetivo (<code>challenge-gitops</code>).</p>
+                </div>
+            </div>
+
+            <h3>Comandos ejecutados para la integración de ArgoCD:</h3>
+            <ol>
+                <li><strong>Instalación del plano de control de ArgoCD:</strong>
+                    <pre><code>kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml</code></pre>
+                </li>
+                <li><strong>Exposición e inicio de sesión en ArgoCD:</strong>
+                    <pre><code>kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+argocd login localhost:8080 --username admin --insecure</code></pre>
+                </li>
+                <li><strong>Creación de la aplicación vinculando GitHub y Kubernetes:</strong>
+                    <pre><code>argocd app create hello-gitops \
+  --repo https://github.com/IberthAlexander/challenge-argo-k8s.git \
+  --revision dev \
+  --path manifests \
+  --dest-server https://kubernetes.default.svc \
+  --dest-namespace challenge-gitops</code></pre>
+                </li>
+                <li><strong>Sincronización declarativa forzada:</strong>
+                    <pre><code>argocd app sync hello-gitops --force</code></pre>
+                </li>
+            </ol>
+
+            <h2>3. Conceptos Clave de Kubernetes</h2>
+            <ul>
+                <li><strong>Pod:</strong> Unidad mínima de cómputo en Kubernetes que agrupa uno o más contenedores compartiendo red y almacenamiento.</li>
+                <li><strong>Deployment:</strong> Objeto declarativo que controla el ciclo de vida, las réplicas y las actualizaciones progresivas de los Pods.</li>
+                <li><strong>Service:</strong> Abstracción de red que provee un punto de acceso estable (IP y Puerto) hacia un conjunto de Pods seleccionados por sus etiquetas.</li>
+            </ul>
+        </div>
+
+        <!-- PESTAÑA 2: MANIFIESTO -->
+        <div id="manifest" class="tab-content">
+            <h2>Estructura del Manifiesto Unificado Base (<code>deployment.yaml</code>)</h2>
+            <p>A continuación se presenta el manifiesto declarativo unificado subido al repositorio central de GitHub en la ruta <code>manifests/deployment.yaml</code> dentro de la rama <code>dev</code>:</p>
+            
+            <pre><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: challenge-gitops
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deployment
+  namespace: challenge-gitops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-web
+  template:
+    metadata:
+      labels:
+        app: hello-web
+    spec:
+      containers:
+      - name: web
+        image: hashicorp/http-echo:latest
+        args:
+          - "-text=Hola desde ArgoCD y Kubernetes local!"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+  namespace: challenge-gitops
+spec:
+  type: NodePort
+  selector:
+    app: hello-web
+  ports:
+    - port: 80
+      targetPort: 5678
+      nodePort: 30081</code></pre>
+
+            <div class="callout callout-success">
+                <h4>Buenas Prácticas Incluidas</h4>
+                <p>El manifiesto incluye límites de recursos (<code>requests</code> y <code>limits</code>) para prevenir el agotamiento de memoria del nodo, configuración de replicas en 2 para alta disponibilidad básica y exposición de servicio NodePort para pruebas en entorno local.</p>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: ISSUES & TROUBLESHOOTING -->
+        <div id="issues" class="tab-content">
+            <h2>Troubleshooting GitOps: Resolución de 5 Situaciones de Error</h2>
+            <p>Metodología de diagnóstico avanzado y resolución declarativa sin aplicar parches manuales directo en el clúster (cero uso de <code>kubectl edit</code> directo).</p>
+
+            <!-- CASO 1 -->
+            <div class="callout callout-danger">
+                <h4>Caso 1: Solicitud de Memoria Superior a la Disponible (`Insufficient memory`)</h4>
+                <p><strong>Escenario:</strong> El manifiesto exige <code>memory: "8Gi"</code> por Pod (16 GB total para 2 réplicas), superando la memoria libre del nodo de Minikube (7.46 GB disponibles según <code>kubectl describe node minikube</code>).</p>
+                
+                <p><strong>1. Comandos de Validación:</strong></p>
+                <pre><code>kubectl get pods -n challenge-gitops
+kubectl describe node minikube | grep -A 8 "Allocatable"</code></pre>
+                
+                <p><strong>2. Obtención de Evidencia / Logs del Evento (`kubectl describe`):</strong></p>
+                <pre><code>kubectl describe pod -l app=hello-web -n challenge-gitops</code></pre>
+                <p><em>Salida obtenida en la sección de eventos del Scheduler:</em></p>
+                <pre><code>Warning  FailedScheduling  default-scheduler  0/1 nodes are available: 1 Insufficient memory. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.</code></pre>
+
+                <p><strong>3. Resolución bajo Flujo GitOps:</strong></p>
+                <ol>
+                    <li>Editar <code>manifests/deployment.yaml</code> en GitHub actualizando los recursos a un valor válido (<code>128Mi</code>).</li>
+                    <li>Realizar <code>git commit</code> y <code>git push origin dev</code>.</li>
+                    <li>Sincronizar el clúster con la CLI de ArgoCD:
+                        <pre><code>argocd app sync hello-gitops --force</code></pre>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- CASO 2 -->
+            <div class="callout callout-warning">
+                <h4>Caso 2: Imagen de Contenedor Errónea o Inexistente (`ImagePullBackOff` / `ErrImagePull`)</h4>
+                <p><strong>Escenario:</strong> Se introdujo intencionadamente una imagen inexistente con typo en el manifiesto YAML (<code>hashicorp/http-echo-rotte:v99</code>) para evaluar el comportamiento del controlador Kubelet y el estado de sincronización en ArgoCD.</p>
+                
+                <p><strong>1. Comandos de Validación:</strong></p>
+                <pre><code>kubectl get pods -n challenge-gitops
+argocd app get hello-gitops</code></pre>
+                <p><em>Resultado:</em> El Pod se queda en estado <code>Waiting</code> mostrando la razón <code>ErrImagePull</code> y pasa al bucle <code>ImagePullBackOff</code>. En ArgoCD, la aplicación reporta un estado de salud <strong>Degraded</strong>.</p>
+                
+                <p><strong>2. Obtención de Evidencia / Logs del Evento (`kubectl describe pod`):</strong></p>
+                <pre><code>kubectl describe pod hello-deployment-85f5898499-rpvmk -n challenge-gitops</code></pre>
+                <p><em>Salida exacta de los eventos capturados en el clúster:</em></p>
+                <pre><code>Containers:
+  web:
+    Image:      hashicorp/http-echo-rotte:v99
+    State:      Waiting
+      Reason:   ErrImagePull
+    Ready:      False
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  40s                default-scheduler  Successfully assigned challenge-gitops/hello-deployment-85f5898499-rpvmk to minikube
+  Normal   Pulling    24s (x2 over 40s)  kubelet            spec.containers{web}: Pulling image "hashicorp/http-echo-rotte:v99"
+  Warning  Failed     23s (x2 over 39s)  kubelet            spec.containers{web}: Failed to pull image "hashicorp/http-echo-rotte:v99": failed to pull and unpack image "docker.io/hashicorp/http-echo-rotte:v99": failed to resolve reference "docker.io/hashicorp/http-echo-rotte:v99": pull access denied, repository does not exist or may require authorization
+  Warning  Failed     23s (x2 over 39s)  kubelet            spec.containers{web}: Error: ErrImagePull
+  Normal   BackOff    8s (x2 over 38s)   kubelet            spec.containers{web}: Back-off pulling image "hashicorp/http-echo-rotte:v99"
+  Warning  Failed     8s (x2 over 38s)   kubelet            spec.containers{web}: Error: ImagePullBackOff</code></pre>
+
+                <p><strong>3. Resolución Paso a Paso bajo Flujo GitOps:</strong></p>
+                <ol>
+                    <li>Editar el archivo <code>manifests/deployment.yaml</code> en GitHub corrigiendo la imagen a su tag oficial funcional:
+                        <pre><code>spec:
+  containers:
+  - name: web
+    image: hashicorp/http-echo:latest</code></pre>
+                    </li>
+                    <li>Enviar los cambios al repositorio central en GitHub:
+                        <pre><code>git add manifests/deployment.yaml
+git commit -m "fix: corregir imagen erronea a hashicorp/http-echo:latest"
+git push origin dev</code></pre>
+                    </li>
+                    <li>Ejecutar la sincronización forzada a través de la CLI de ArgoCD:
+                        <pre><code>argocd app sync hello-gitops --force</code></pre>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- CASO 3 -->
+            <div class="callout callout-danger">
+                <h4>Caso 3: Requerimiento de Hardware Inexistente / GPU (`Unsatisfiable nodeSelector`)</h4>
+                <p><strong>Escenario:</strong> El manifiesto solicita un nodo específico equipado con GPU (<code>nodeSelector: accelerator: nvidia-tesla-v100</code>), pero el clúster local Minikube únicamente posee nodos CPU genéricos.</p>
+
+                <p><strong>1. Comandos de Validación:</strong></p>
+                <pre><code>kubectl get pods -n challenge-gitops
+kubectl get nodes --show-labels</code></pre>
+
+                <p><strong>2. Obtención de Evidencia / Logs del Evento (`kubectl describe`):</strong></p>
+                <pre><code>kubectl describe pod hello-deployment-8645d54c8d-hw2n7 -n challenge-gitops</code></pre>
+                <p><em>Salida obtenida en los eventos del Scheduler:</em></p>
+                <pre><code>Node-Selectors:              accelerator=nvidia-tesla-v100
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  58s   default-scheduler  0/1 nodes are available: 1 node(s) didn't match Pod's node affinity/selector. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.</code></pre>
+
+                <p><strong>3. Resolución bajo Flujo GitOps:</strong></p>
+                <ol>
+                    <li>Remover la sección <code>nodeSelector</code> restrictiva del manifiesto en GitHub.</li>
+                    <li>Subir los cambios con <code>git push origin dev</code>.</li>
+                    <li>Reaplicar el estado deseado con <code>argocd app sync hello-gitops --force</code>.</li>
+                </ol>
+            </div>
+
+            <!-- CASO 4 -->
+            <div class="callout callout-warning">
+                <h4>Caso 4: Falla de Liveness Probe / Health Check (`CrashLoopBackOff`)</h4>
+                <p><strong>Escenario:</strong> Se configuró una sonda de salud (`livenessProbe`) apuntando a un puerto o ruta HTTP inexistente (<code>path: /healthz</code>), provocando que Kubelet mate y reinicie continuamente el contenedor.</p>
+
+                <p><strong>1. Comandos de Validación y Diagnóstico Avanzado:</strong></p>
+                <pre><code>kubectl get pods -n challenge-gitops -w
+kubectl logs -l app=hello-web -n challenge-gitops --previous
+kubectl describe pod -l app=hello-web -n challenge-gitops</code></pre>
+
+                <p><strong>2. Obtención de Evidencia en Eventos del Kubelet:</strong></p>
+                <pre><code>Warning  Unhealthy  kubelet  Liveness probe failed: HTTP probe failed with statuscode: 404
+Normal   Killing    kubelet  Container web failed liveness probe, will be restarted</code></pre>
+
+                <p><strong>3. Resolución bajo Flujo GitOps:</strong></p>
+                <ol>
+                    <li>Ajustar el <code>path</code> del probe a la ruta raíz <code>/</code> funcional en GitHub o remover el bloque defectuoso.</li>
+                    <li>Subir cambios con <code>git push origin dev</code> y sincronizar con <code>argocd app sync hello-gitops --force</code>.</li>
+                </ol>
+            </div>
+
+            <!-- CASO 5 -->
+            <div class="callout callout-warning">
+                <h4>Caso 5: Desalineación de Puertos de Red (`targetPort` Incorrecto en Service)</h4>
+                <p><strong>Escenario:</strong> Los Pods figuran sanos en <code>Running (1/1)</code>, pero el `Service` mapea el <code>targetPort</code> al puerto <code>9999</code> en lugar del puerto <code>5678</code> donde escucha el contenedor.</p>
+
+                <p><strong>1. Comandos de Validación de Red y EndpointSlices:</strong></p>
+                <pre><code>kubectl get svc hello-service -n challenge-gitops
+kubectl get endpoints hello-service -n challenge-gitops
+kubectl get endpointslices -n challenge-gitops</code></pre>
+                <p><em>Salida obtenida en los Endpoints del clúster:</em></p>
+                <pre><code>NAME           ENDPOINTS                           AGE
+hello-service   10.244.0.23:9999,10.244.0.24:9999   58s</code></pre>
+
+                <p><strong>2. Prueba de Conectividad con Pod Efímero de `curl`:</strong></p>
+                <pre><code>kubectl run curl-test --image=curlimages/curl -it --rm -n challenge-gitops -- sh
+~ $ curl -v http://hello-service.challenge-gitops.svc.cluster.local</code></pre>
+                <p><em>Respuesta HTTP comprobada tras corregir el `targetPort` a 5678:</em></p>
+                <pre><code>< HTTP/1.1 200 OK
+< X-App-Name: http-echo
+< Content-Type: text/plain; charset=utf-8
+Hola desde ArgoCD y Kubernetes local!</code></pre>
+
+                <p><strong>3. Resolución bajo Flujo GitOps:</strong></p>
+                <ol>
+                    <li>Editar `manifests/deployment.yaml` corrigiendo <code>targetPort: 5678</code> en GitHub.</li>
+                    <li>Realizar <code>git push origin dev</code> y forzar sincronización en ArgoCD (<code>argocd app sync hello-gitops --force</code>).</li>
+                </ol>
+            </div>
+
+            <h3>Resumen de Reglas de Diagnóstico Rápido</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>Error de Indentación (YAML)</h4>
+                    <p><strong>Causa:</strong> Clave <code>containers:</code> mal alineada.</p>
+                    <p><strong>Diagnóstico:</strong> <code>Deployment.apps is invalid: spec.template.spec.containers: Required value</code>.</p>
+                </div>
+                <div class="card">
+                    <h4>Requests > Limits</h4>
+                    <p><strong>Conflicto:</strong> <code>requests: 512Mi</code> vs <code>limits: 256Mi</code>.</p>
+                    <p><strong>Resultado:</strong> Rechazo de API de Kubernetes o reinicios por <code>OOMKilled</code>.</p>
+                </div>
+                <div class="card">
+                    <h4>Workflow GitOps</h4>
+                    <p><strong>Ciclo:</strong> 1. Detectar (<code>get pods/svc</code>) &rarr; 2. Evidencia (<code>describe/endpoints/curl</code>) &rarr; 3. Fix en Git &rarr; 4. Sync ArgoCD.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-success">
+                <h4>Conclusión de Buenas Prácticas GitOps</h4>
+                <p>Ningún fallo en el clúster debe corregirse ejecutando parches manuales (<code>kubectl edit</code> / <code>kubectl set</code>). Toda modificación requiere ser comiteada en GitHub para mantener la audibilidad, la trazabilidad y la convergencia automática que ofrece ArgoCD.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Challenge DevOps Completado con Éxito - Minikube, ArgoCD & GitOps</p>
+        </footer>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
