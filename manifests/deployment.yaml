@@ -23,8 +23,60 @@ spec:
         image: hashicorp/http-echo:latest
         args:
           - "-text=Hola desde ArgoCD y Kubernetes local!"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
         ports:
-        - containerPort: 5678
+        - containerPort: 5678     
+        livenessProbe:
+          httpGet:
+            path: /healthz     
+            port: 5678
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stress-test-pod
+  namespace: challenge-gitops
+  labels:
+    app: hello-web-stress
+spec:
+  containers:
+  - name: stress
+    image: polinux/stress
+    command: ["stress"]
+    args: ["--vm", "1", "--vm-bytes", "150M", "--vm-hang", "1"]
+    resources:
+      requests:
+        memory: "50Mi"
+      limits:
+        memory: "50Mi"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-config-error-pod
+  namespace: challenge-gitops
+  labels:
+    app: config-error-test
+spec:
+  containers:
+  - name: app
+    image: busybox
+    command: ["sh", "-c", "echo 'ERROR: falta DATABASE_URL'; sleep 3; exit 1"]
+    resources:
+      requests:
+        memory: "32Mi"
+        cpu: "50m"
+      limits:
+        memory: "64Mi"
+        cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
